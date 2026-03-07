@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spring Boot Cheatsheet</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2330;
+    --border: #30363d;
+    --green: #3fb950;
+    --blue: #58a6ff;
+    --orange: #f0883e;
+    --pink: #f778ba;
+    --purple: #bc8cff;
+    --yellow: #e3b341;
+    --red: #ff7b72;
+    --text: #e6edf3;
+    --muted: #8b949e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 2rem;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 200px;
+    background: radial-gradient(ellipse, rgba(63,185,80,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, var(--green), var(--blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header p {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+  }
+
+  .card-header {
+    padding: 0.85rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .card-header .icon {
+    font-size: 1.1rem;
+  }
+
+  .card-header h2 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .card-body {
+    padding: 0.8rem;
+  }
+
+  .anno {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.3rem 0.8rem;
+    align-items: start;
+    padding: 0.5rem 0.6rem;
+    border-radius: 6px;
+    transition: background 0.15s;
+  }
+
+  .anno:hover { background: var(--surface2); }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    line-height: 1.6;
+  }
+
+  .desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+    padding-top: 2px;
+  }
+
+  .desc code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    background: var(--surface2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--yellow);
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0.3rem 0;
+    opacity: 0.5;
+  }
+
+  /* Color variants */
+  .c-green  { background: rgba(63,185,80,0.12);  color: var(--green); }
+  .c-blue   { background: rgba(88,166,255,0.12); color: var(--blue); }
+  .c-orange { background: rgba(240,136,62,0.12); color: var(--orange); }
+  .c-pink   { background: rgba(247,120,186,0.12);color: var(--pink); }
+  .c-purple { background: rgba(188,140,255,0.12);color: var(--purple); }
+  .c-yellow { background: rgba(227,179,65,0.12); color: var(--yellow); }
+  .c-red    { background: rgba(255,123,114,0.12);color: var(--red); }
+
+  /* Card accent borders */
+  .accent-green  { --accent: var(--green); }
+  .accent-blue   { --accent: var(--blue); }
+  .accent-orange { --accent: var(--orange); }
+  .accent-pink   { --accent: var(--pink); }
+  .accent-purple { --accent: var(--purple); }
+  .accent-yellow { --accent: var(--yellow); }
+  .accent-red    { --accent: var(--red); }
+
+  .card-header.bg-green  { background: rgba(63,185,80,0.07);  }
+  .card-header.bg-blue   { background: rgba(88,166,255,0.07); }
+  .card-header.bg-orange { background: rgba(240,136,62,0.07); }
+  .card-header.bg-pink   { background: rgba(247,120,186,0.07);}
+  .card-header.bg-purple { background: rgba(188,140,255,0.07);}
+  .card-header.bg-yellow { background: rgba(227,179,65,0.07); }
+  .card-header.bg-red    { background: rgba(255,123,114,0.07);}
+
+  .section-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    padding: 0.4rem 0.6rem 0.2rem;
+    font-weight: 600;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 3rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  @media (max-width: 600px) {
+    .grid { grid-template-columns: 1fr; }
+    .header h1 { font-size: 2rem; }
+    body { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Spring Boot Cheatsheet</h1>
+  <p>// các annotation thường dùng trong Spring Boot</p>
+</div>
+
+<div class="grid">
+
+  <!-- CORE / BEAN -->
+  <div class="card accent-green">
+    <div class="card-header bg-green">
+      <span class="icon">🌱</span>
+      <h2 style="color:var(--green)">Core &amp; Bean</h2>
+    </div>
+    <div class="card-body">
+      <div class="anno">
+        <span class="tag c-green">@SpringBootApplication</span>
+        <span class="desc">Khai báo class chính, tự động bật <code>@Configuration</code> + <code>@ComponentScan</code> + <code>@EnableAutoConfiguration</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-green">@Component</span>
+        <span class="desc">Đánh dấu class là Spring Bean (generic)</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-green">@Bean</span>
+        <span class="desc">Khai báo method trả về bean trong <code>@Configuration</code> class</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-green">@Configuration</span>
+        <span class="desc">Class chứa cấu hình, thường dùng cùng <code>@Bean</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-green">@Autowired</span>
+        <span class="desc">Tự động inject bean (nên dùng constructor injection thay thế)</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-green">@Qualifier("name")</span>
+        <span class="desc">Chỉ định bean cụ thể khi có nhiều bean cùng kiểu</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-green">@Primary</span>
+        <span class="desc">Ưu tiên bean này khi có nhiều bean cùng kiểu</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-green">@Scope("prototype")</span>
+        <span class="desc">Tạo bean mới mỗi lần inject (mặc định là <code>singleton</code>)</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-green">@Lazy</span>
+        <span class="desc">Khởi tạo bean khi cần, không khởi tạo lúc start app</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTROLLER / WEB -->
+  <div class="card accent-blue">
+    <div class="card-header bg-blue">
+      <span class="icon">🌐</span>
+      <h2 style="color:var(--blue)">Controller &amp; Web</h2>
+    </div>
+    <div class="card-body">
+      <div class="anno">
+        <span class="tag c-blue">@RestController</span>
+        <span class="desc">= <code>@Controller</code> + <code>@ResponseBody</code>, trả JSON/XML</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-blue">@Controller</span>
+        <span class="desc">Trả về view (Thymeleaf, JSP...)</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-blue">@RequestMapping</span>
+        <span class="desc">Map URL cho class hoặc method. VD: <code>("/api/tickets")</code></span>
+      </div>
+      <div class="divider"></div>
+      <div class="section-label">HTTP Methods</div>
+      <div class="anno">
+        <span class="tag c-blue">@GetMapping</span>
+        <span class="desc">Lấy dữ liệu — <code>GET /api/tickets</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-blue">@PostMapping</span>
+        <span class="desc">Tạo mới — <code>POST /api/tickets</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-blue">@PutMapping</span>
+        <span class="desc">Cập nhật toàn bộ — <code>PUT /api/tickets/1</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-blue">@PatchMapping</span>
+        <span class="desc">Cập nhật một phần — <code>PATCH /api/tickets/1</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-blue">@DeleteMapping</span>
+        <span class="desc">Xóa — <code>DELETE /api/tickets/1</code></span>
+      </div>
+      <div class="divider"></div>
+      <div class="section-label">Tham số</div>
+      <div class="anno">
+        <span class="tag c-blue">@PathVariable</span>
+        <span class="desc">Lấy từ URL — <code>/tickets/{id}</code> → <code>Long id</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-blue">@RequestParam</span>
+        <span class="desc">Query string — <code>?page=1&size=10</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-blue">@RequestBody</span>
+        <span class="desc">Parse JSON body thành object DTO</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-blue">@RequestHeader</span>
+        <span class="desc">Lấy giá trị từ HTTP header. VD: <code>Authorization</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-blue">@ResponseStatus</span>
+        <span class="desc">Đặt HTTP status code mặc định. VD: <code>(HttpStatus.CREATED)</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-blue">@CrossOrigin</span>
+        <span class="desc">Cho phép CORS trên từng controller/method</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVICE / STEREOTYPE -->
+  <div class="card accent-purple">
+    <div class="card-header bg-purple">
+      <span class="icon">⚙️</span>
+      <h2 style="color:var(--purple)">Service &amp; Stereotype</h2>
+    </div>
+    <div class="card-body">
+      <div class="anno">
+        <span class="tag c-purple">@Service</span>
+        <span class="desc">Đánh dấu lớp business logic (extends <code>@Component</code>)</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-purple">@Repository</span>
+        <span class="desc">Đánh dấu lớp data access, tự dịch exception thành Spring DataAccessException</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-purple">@Transactional</span>
+        <span class="desc">Bọc method trong transaction DB. Tự rollback nếu có exception</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-purple">@Transactional<br/>(readOnly=true)</span>
+        <span class="desc">Tối ưu cho query chỉ đọc, không ghi</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- JPA / ENTITY -->
+  <div class="card accent-orange">
+    <div class="card-header bg-orange">
+      <span class="icon">🗄️</span>
+      <h2 style="color:var(--orange)">JPA &amp; Entity</h2>
+    </div>
+    <div class="card-body">
+      <div class="anno">
+        <span class="tag c-orange">@Entity</span>
+        <span class="desc">Ánh xạ class với bảng trong database</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-orange">@Table(name="")</span>
+        <span class="desc">Chỉ định tên bảng cụ thể. VD: <code>@Table(name="tickets")</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-orange">@Id</span>
+        <span class="desc">Đánh dấu field là primary key</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-orange">@GeneratedValue</span>
+        <span class="desc">Tự tăng ID. VD: <code>(strategy = GenerationType.IDENTITY)</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-orange">@Column</span>
+        <span class="desc">Tùy chỉnh cột — <code>name, nullable, unique, length</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-orange">@Enumerated</span>
+        <span class="desc">Lưu enum vào DB. Dùng <code>EnumType.STRING</code> cho dễ đọc</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-orange">@CreationTimestamp</span>
+        <span class="desc">Tự ghi thời gian tạo (Hibernate)</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-orange">@UpdateTimestamp</span>
+        <span class="desc">Tự cập nhật thời gian sửa (Hibernate)</span>
+      </div>
+      <div class="divider"></div>
+      <div class="section-label">Quan hệ</div>
+      <div class="anno">
+        <span class="tag c-orange">@OneToOne</span>
+        <span class="desc">1 User ↔ 1 Profile</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-orange">@OneToMany</span>
+        <span class="desc">1 User → nhiều Ticket</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-orange">@ManyToOne</span>
+        <span class="desc">Nhiều Ticket → 1 User</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-orange">@ManyToMany</span>
+        <span class="desc">Nhiều User ↔ nhiều Role</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-orange">@JoinColumn</span>
+        <span class="desc">Chỉ định foreign key. VD: <code>name="user_id"</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-orange">@JoinTable</span>
+        <span class="desc">Chỉ định bảng trung gian cho <code>@ManyToMany</code></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- VALIDATION -->
+  <div class="card accent-yellow">
+    <div class="card-header bg-yellow">
+      <span class="icon">✅</span>
+      <h2 style="color:var(--yellow)">Validation</h2>
+    </div>
+    <div class="card-body">
+      <div class="anno">
+        <span class="tag c-yellow">@Valid</span>
+        <span class="desc">Kích hoạt validation cho <code>@RequestBody</code> object</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-yellow">@Validated</span>
+        <span class="desc">Tương tự <code>@Valid</code>, hỗ trợ thêm group validation</span>
+      </div>
+      <div class="divider"></div>
+      <div class="section-label">Bean Validation (jakarta.validation)</div>
+      <div class="anno">
+        <span class="tag c-yellow">@NotNull</span>
+        <span class="desc">Không được null</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-yellow">@NotBlank</span>
+        <span class="desc">Không được null, rỗng, hoặc chỉ có khoảng trắng</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-yellow">@NotEmpty</span>
+        <span class="desc">Không được null hoặc rỗng (cho String, List...)</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-yellow">@Size(min,max)</span>
+        <span class="desc">Giới hạn độ dài. VD: <code>@Size(min=3, max=50)</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-yellow">@Min / @Max</span>
+        <span class="desc">Giới hạn giá trị số</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-yellow">@Email</span>
+        <span class="desc">Kiểm tra định dạng email hợp lệ</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-yellow">@Pattern(regexp)</span>
+        <span class="desc">Kiểm tra theo regex. VD: số điện thoại</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-yellow">@Positive</span>
+        <span class="desc">Số phải > 0</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-yellow">@Future / @Past</span>
+        <span class="desc">Ngày phải trong tương lai / quá khứ</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXCEPTION HANDLING -->
+  <div class="card accent-red">
+    <div class="card-header bg-red">
+      <span class="icon">🚨</span>
+      <h2 style="color:var(--red)">Exception Handling</h2>
+    </div>
+    <div class="card-body">
+      <div class="anno">
+        <span class="tag c-red">@ControllerAdvice</span>
+        <span class="desc">Xử lý exception toàn cục cho tất cả controller</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-red">@RestControllerAdvice</span>
+        <span class="desc">= <code>@ControllerAdvice</code> + <code>@ResponseBody</code>, trả JSON</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-red">@ExceptionHandler</span>
+        <span class="desc">Xử lý exception cụ thể. VD: <code>(ResourceNotFoundException.class)</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-red">@ResponseStatus</span>
+        <span class="desc">Đặt HTTP status cho exception. VD: <code>(HttpStatus.NOT_FOUND)</code></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECURITY -->
+  <div class="card accent-pink">
+    <div class="card-header bg-pink">
+      <span class="icon">🔐</span>
+      <h2 style="color:var(--pink)">Security</h2>
+    </div>
+    <div class="card-body">
+      <div class="anno">
+        <span class="tag c-pink">@EnableWebSecurity</span>
+        <span class="desc">Bật Spring Security cho ứng dụng</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-pink">@EnableMethodSecurity</span>
+        <span class="desc">Cho phép dùng annotation bảo mật trên method</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-pink">@PreAuthorize</span>
+        <span class="desc">Kiểm tra quyền trước khi vào method. VD: <code>("hasRole('ADMIN')")</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-pink">@PostAuthorize</span>
+        <span class="desc">Kiểm tra quyền sau khi method chạy xong</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-pink">@Secured</span>
+        <span class="desc">Giới hạn role được phép. VD: <code>({"ROLE_ADMIN", "ROLE_USER"})</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-pink">@AuthenticationPrincipal</span>
+        <span class="desc">Inject thông tin user đang đăng nhập vào method</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIG / PROPERTIES -->
+  <div class="card accent-blue">
+    <div class="card-header bg-blue">
+      <span class="icon">⚙️</span>
+      <h2 style="color:var(--blue)">Config &amp; Properties</h2>
+    </div>
+    <div class="card-body">
+      <div class="anno">
+        <span class="tag c-blue">@Value</span>
+        <span class="desc">Inject giá trị từ <code>application.properties</code>. VD: <code>("${jwt.secret}")</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-blue">@ConfigurationProperties</span>
+        <span class="desc">Map nhiều property vào một class. VD: <code>(prefix="app.jwt")</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-blue">@EnableConfigurationProperties</span>
+        <span class="desc">Kích hoạt class <code>@ConfigurationProperties</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-blue">@Profile</span>
+        <span class="desc">Bean chỉ load ở profile cụ thể. VD: <code>("dev")</code> hay <code>("prod")</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-blue">@ConditionalOnProperty</span>
+        <span class="desc">Tạo bean khi property có giá trị nhất định</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-blue">@PropertySource</span>
+        <span class="desc">Load file properties tùy chỉnh vào context</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOMBOK -->
+  <div class="card accent-green">
+    <div class="card-header bg-green">
+      <span class="icon">🏗️</span>
+      <h2 style="color:var(--green)">Lombok (hay dùng)</h2>
+    </div>
+    <div class="card-body">
+      <div class="anno">
+        <span class="tag c-green">@Data</span>
+        <span class="desc">= <code>@Getter</code> + <code>@Setter</code> + <code>@ToString</code> + <code>@EqualsAndHashCode</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-green">@Getter / @Setter</span>
+        <span class="desc">Tự sinh getter/setter cho field hoặc cả class</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-green">@NoArgsConstructor</span>
+        <span class="desc">Tạo constructor không tham số</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-green">@AllArgsConstructor</span>
+        <span class="desc">Tạo constructor với tất cả field</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-green">@RequiredArgsConstructor</span>
+        <span class="desc">Constructor cho các field <code>final</code> — dùng thay <code>@Autowired</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-green">@Builder</span>
+        <span class="desc">Tạo builder pattern. VD: <code>User.builder().name("Nam").build()</code></span>
+      </div>
+      <div class="anno">
+        <span class="tag c-green">@Slf4j</span>
+        <span class="desc">Tự tạo biến <code>log</code> để ghi log. VD: <code>log.info("message")</code></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TESTING -->
+  <div class="card accent-purple">
+    <div class="card-header bg-purple">
+      <span class="icon">🧪</span>
+      <h2 style="color:var(--purple)">Testing</h2>
+    </div>
+    <div class="card-body">
+      <div class="anno">
+        <span class="tag c-purple">@SpringBootTest</span>
+        <span class="desc">Load toàn bộ Application Context cho integration test</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-purple">@WebMvcTest</span>
+        <span class="desc">Chỉ load Controller layer, không cần DB</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-purple">@DataJpaTest</span>
+        <span class="desc">Chỉ load JPA layer, dùng H2 in-memory DB</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-purple">@MockBean</span>
+        <span class="desc">Tạo mock bean thay thế bean thật trong context</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-purple">@Mock</span>
+        <span class="desc">Tạo mock object (Mockito), dùng trong unit test</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-purple">@InjectMocks</span>
+        <span class="desc">Inject các <code>@Mock</code> vào class đang test</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-purple">@Test</span>
+        <span class="desc">Đánh dấu method là test case (JUnit 5)</span>
+      </div>
+      <div class="anno">
+        <span class="tag c-purple">@BeforeEach</span>
+        <span class="desc">Chạy trước mỗi test method</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+  <!-- VALIDATION THỰC TẾ -->
+  <div class="card accent-yellow" style="grid-column: span 2;">
+    <div class="card-header bg-yellow">
+      <span class="icon">🛡️</span>
+      <h2 style="color:var(--yellow)">Validation — Áp dụng thực tế</h2>
+    </div>
+    <div class="card-body">
+      <div class="section-label">1. Thêm dependency vào pom.xml</div>
+      <pre style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#e6edf3;background:var(--surface2);padding:0.8rem;border-radius:6px;line-height:1.8;overflow-x:auto;margin-bottom:0.8rem;"><span style="color:var(--blue)">&lt;dependency&gt;</span>
+    <span style="color:var(--green)">&lt;groupId&gt;</span>org.springframework.boot<span style="color:var(--green)">&lt;/groupId&gt;</span>
+    <span style="color:var(--green)">&lt;artifactId&gt;</span>spring-boot-starter-validation<span style="color:var(--green)">&lt;/artifactId&gt;</span>
+<span style="color:var(--blue)">&lt;/dependency&gt;</span></pre>
+
+      <div class="section-label">2. Thêm annotation vào Record/DTO</div>
+      <pre style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#e6edf3;background:var(--surface2);padding:0.8rem;border-radius:6px;line-height:1.8;overflow-x:auto;margin-bottom:0.8rem;"><span style="color:var(--blue)">public record</span> <span style="color:var(--yellow)">RegisterRequest</span>(
+
+    <span style="color:var(--pink)">@NotBlank</span>(message = <span style="color:var(--green)">"Họ tên không được rỗng"</span>)
+    <span style="color:var(--pink)">@Size</span>(min = 2, max = 50, message = <span style="color:var(--green)">"Họ tên từ 2-50 ký tự"</span>)
+    String fullname,
+
+    <span style="color:var(--pink)">@NotNull</span>(message = <span style="color:var(--green)">"Ngày sinh không được rỗng"</span>)
+    <span style="color:var(--pink)">@Past</span>(message = <span style="color:var(--green)">"Ngày sinh phải là ngày trong quá khứ"</span>)
+    LocalDate dob,
+
+    <span style="color:var(--pink)">@NotBlank</span>(message = <span style="color:var(--green)">"Email không được rỗng"</span>)
+    <span style="color:var(--pink)">@Email</span>(message = <span style="color:var(--green)">"Email không đúng định dạng"</span>)
+    String email,
+
+    <span style="color:var(--pink)">@NotBlank</span>(message = <span style="color:var(--green)">"Mật khẩu không được rỗng"</span>)
+    <span style="color:var(--pink)">@Size</span>(min = 6, max = 20, message = <span style="color:var(--green)">"Mật khẩu từ 6-20 ký tự"</span>)
+    String password
+
+) {}</pre>
+
+      <div class="section-label">3. Thêm @Valid vào Controller</div>
+      <pre style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#e6edf3;background:var(--surface2);padding:0.8rem;border-radius:6px;line-height:1.8;overflow-x:auto;margin-bottom:0.8rem;"><span style="color:var(--pink)">@PostMapping</span>(<span style="color:var(--green)">"/register"</span>)
+<span style="color:var(--blue)">public</span> ResponseEntity&lt;AuthResponse&gt; register(<span style="color:var(--pink)">@Valid @RequestBody</span> RegisterRequest request) {
+    <span style="color:var(--muted)">// Nếu thiếu @Valid → annotation bị bỏ qua hoàn toàn!</span>
+    <span style="color:var(--blue)">return</span> ResponseEntity.ok(authService.register(request));
+}</pre>
+
+      <div class="section-label">Phân biệt @NotNull / @NotEmpty / @NotBlank</div>
+      <pre style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#e6edf3;background:var(--surface2);padding:0.8rem;border-radius:6px;line-height:1.8;overflow-x:auto;"><span style="color:var(--muted)">// @NotNull  — chỉ kiểm tra null</span>
+null  → ❌   <span style="color:var(--green)">""</span>    → ✅   <span style="color:var(--green)">"   "</span> → ✅   <span style="color:var(--green)">"abc"</span> → ✅
+
+<span style="color:var(--muted)">// @NotEmpty — kiểm tra null + rỗng</span>
+null  → ❌   <span style="color:var(--green)">""</span>    → ❌   <span style="color:var(--green)">"   "</span> → ✅   <span style="color:var(--green)">"abc"</span> → ✅
+
+<span style="color:var(--muted)">// @NotBlank — kiểm tra null + rỗng + khoảng trắng ← dùng cho String!</span>
+null  → ❌   <span style="color:var(--green)">""</span>    → ❌   <span style="color:var(--green)">"   "</span> → ❌   <span style="color:var(--green)">"abc"</span> → ✅</pre>
+    </div>
+  </div>
+
+  <!-- GLOBAL EXCEPTION HANDLER -->
+  <div class="card accent-red" style="grid-column: span 2;">
+    <div class="card-header bg-red">
+      <span class="icon">🚨</span>
+      <h2 style="color:var(--red)">GlobalExceptionHandler — Xử lý lỗi tập trung</h2>
+    </div>
+    <div class="card-body">
+      <pre style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#e6edf3;background:var(--surface2);padding:1rem;border-radius:8px;line-height:1.8;overflow-x:auto;"><span style="color:var(--pink)">@RestControllerAdvice</span>  <span style="color:var(--muted)">// Xử lý exception cho toàn bộ Controller</span>
+<span style="color:var(--blue)">public class</span> <span style="color:var(--yellow)">GlobalExceptionHandler</span> {
+
+    <span style="color:var(--muted)">// Validation lỗi → 400 + danh sách field lỗi</span>
+    <span style="color:var(--pink)">@ExceptionHandler</span>(MethodArgumentNotValidException.<span style="color:var(--blue)">class</span>)
+    <span style="color:var(--blue)">public</span> ResponseEntity&lt;Map&lt;String, String&gt;&gt; handleValidation(MethodArgumentNotValidException ex) {
+        Map&lt;String, String&gt; errors = <span style="color:var(--blue)">new</span> HashMap&lt;&gt;();
+        ex.getBindingResult().getFieldErrors()
+          .forEach(e -&gt; errors.put(e.getField(), e.getDefaultMessage()));
+        <span style="color:var(--blue)">return</span> ResponseEntity.status(<span style="color:var(--orange)">400</span>).body(errors);
+    }
+
+    <span style="color:var(--muted)">// Sai email/password → 401</span>
+    <span style="color:var(--pink)">@ExceptionHandler</span>(BadCredentialsException.<span style="color:var(--blue)">class</span>)
+    <span style="color:var(--blue)">public</span> ResponseEntity&lt;String&gt; handleBadCredentials() {
+        <span style="color:var(--blue)">return</span> ResponseEntity.status(<span style="color:var(--orange)">401</span>).body(<span style="color:var(--green)">"Sai email hoặc mật khẩu"</span>);
+    }
+
+    <span style="color:var(--muted)">// Tài khoản bị khóa → 403</span>
+    <span style="color:var(--pink)">@ExceptionHandler</span>(LockedException.<span style="color:var(--blue)">class</span>)
+    <span style="color:var(--blue)">public</span> ResponseEntity&lt;String&gt; handleLocked() {
+        <span style="color:var(--blue)">return</span> ResponseEntity.status(<span style="color:var(--orange)">403</span>).body(<span style="color:var(--green)">"Tài khoản đã bị khóa"</span>);
+    }
+
+    <span style="color:var(--muted)">// Email đã tồn tại, role không tìm thấy... → 400</span>
+    <span style="color:var(--pink)">@ExceptionHandler</span>(RuntimeException.<span style="color:var(--blue)">class</span>)
+    <span style="color:var(--blue)">public</span> ResponseEntity&lt;String&gt; handleRuntime(RuntimeException ex) {
+        <span style="color:var(--blue)">return</span> ResponseEntity.status(<span style="color:var(--orange)">400</span>).body(ex.getMessage());
+    }
+}
+
+<span style="color:var(--muted)">// Response khi validation lỗi:</span>
+<span style="color:var(--muted)">// {</span>
+<span style="color:var(--muted)">//   "email": "Email không đúng định dạng",</span>
+<span style="color:var(--muted)">//   "password": "Mật khẩu từ 6-20 ký tự"</span>
+<span style="color:var(--muted)">// }</span></pre>
+    </div>
+  </div>
+
+  <!-- LOMBOK THỰC TẾ -->
+  <div class="card accent-green" style="grid-column: span 2;">
+    <div class="card-header bg-green">
+      <span class="icon">🏗️</span>
+      <h2 style="color:var(--green)">Lombok — Áp dụng thực tế</h2>
+    </div>
+    <div class="card-body">
+      <pre style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#e6edf3;background:var(--surface2);padding:1rem;border-radius:8px;line-height:1.8;overflow-x:auto;"><span style="color:var(--muted)">// ✅ Entity — dùng @Getter + @NoArgsConstructor</span>
+<span style="color:var(--pink)">@Entity</span>
+<span style="color:var(--pink)">@Getter</span>                    <span style="color:var(--muted)">// tự tạo getter cho tất cả field</span>
+<span style="color:var(--pink)">@NoArgsConstructor</span>         <span style="color:var(--muted)">// JPA cần constructor không tham số</span>
+<span style="color:var(--blue)">public class</span> <span style="color:var(--yellow)">User</span> <span style="color:var(--blue)">implements</span> UserDetails {
+    <span style="color:var(--pink)">@Id</span> <span style="color:var(--blue)">private</span> Long id;
+    <span style="color:var(--blue)">private</span> String email;
+    <span style="color:var(--muted)">// KHÔNG dùng @Data cho Entity — gây lỗi với lazy loading!</span>
+}
+
+<span style="color:var(--muted)">// ✅ Service/Controller — dùng @RequiredArgsConstructor thay constructor thủ công</span>
+<span style="color:var(--pink)">@Service</span>
+<span style="color:var(--pink)">@RequiredArgsConstructor</span>   <span style="color:var(--muted)">// tự tạo constructor cho các field final</span>
+<span style="color:var(--blue)">public class</span> <span style="color:var(--yellow)">AuthService</span> {
+    <span style="color:var(--blue)">private final</span> UserRepository userRepository;    <span style="color:var(--muted)">// ← tự inject</span>
+    <span style="color:var(--blue)">private final</span> JwtService jwtService;            <span style="color:var(--muted)">// ← tự inject</span>
+    <span style="color:var(--muted)">// Không cần viết constructor nữa!</span>
+}
+
+<span style="color:var(--muted)">// ✅ DTO — dùng @Builder để tạo object dễ đọc</span>
+<span style="color:var(--pink)">@Builder</span>
+<span style="color:var(--blue)">public record</span> <span style="color:var(--yellow)">AuthResponse</span>(String token, String email, String fullname) {}
+
+AuthResponse response = AuthResponse.builder()
+    .token(token)
+    .email(user.getEmail())
+    .fullname(user.getFullname())
+    .build();
+
+<span style="color:var(--muted)">// ✅ @Slf4j — log thay System.out.println</span>
+<span style="color:var(--pink)">@Slf4j</span>
+<span style="color:var(--pink)">@Service</span>
+<span style="color:var(--blue)">public class</span> <span style="color:var(--yellow)">AuthService</span> {
+    <span style="color:var(--blue)">public</span> AuthResponse login(...) {
+        log.info(<span style="color:var(--green)">"User {} đang đăng nhập"</span>, request.email());
+        log.error(<span style="color:var(--green)">"Lỗi: {}"</span>, e.getMessage());
+    }
+}
+
+<span style="color:var(--muted)">// ❌ KHÔNG dùng @Data cho Entity — dùng @Getter thay thế</span>
+<span style="color:var(--muted)">// ❌ KHÔNG dùng @Getter trên field trong Service (thừa)</span>
+<span style="color:var(--muted)">// ✅ Record đã có getter sẵn → KHÔNG cần Lombok</span></pre>
+    </div>
+  </div>
+
+<!-- REST API SECTION -->
+<div style="max-width:1400px;margin:2.5rem auto 0;">
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+    <div style="height:1px;flex:1;background:var(--border);"></div>
+    <h2 style="font-size:0.8rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);font-family:'JetBrains Mono',monospace;white-space:nowrap;">// REST API Chuẩn</h2>
+    <div style="height:1px;flex:1;background:var(--border);"></div>
+  </div>
+
+  <div class="grid">
+
+    <!-- URL NAMING -->
+    <div class="card accent-blue">
+      <div class="card-header bg-blue">
+        <span class="icon">🔗</span>
+        <h2 style="color:var(--blue)">Đặt tên URL</h2>
+      </div>
+      <div class="card-body">
+        <div class="section-label">✅ Đúng</div>
+        <div class="anno">
+          <span class="tag c-blue">danh từ số nhiều</span>
+          <span class="desc"><code>/api/tickets</code> &nbsp;<code>/api/users</code> &nbsp;<code>/api/comments</code></span>
+        </div>
+        <div class="anno">
+          <span class="tag c-blue">kebab-case</span>
+          <span class="desc"><code>/api/ticket-types</code> &nbsp;<code>/api/user-roles</code></span>
+        </div>
+        <div class="anno">
+          <span class="tag c-blue">nested resource</span>
+          <span class="desc"><code>/api/tickets/{id}/comments</code> — comment thuộc ticket</span>
+        </div>
+        <div class="anno">
+          <span class="tag c-blue">versioning</span>
+          <span class="desc"><code>/api/v1/tickets</code> — nên có version từ đầu</span>
+        </div>
+        <div class="divider"></div>
+        <div class="section-label">❌ Sai</div>
+        <div class="anno">
+          <span class="tag c-red">động từ trong URL</span>
+          <span class="desc"><code>/api/getTickets</code> &nbsp;<code>/api/createUser</code> &nbsp;<code>/api/deleteTicket</code></span>
+        </div>
+        <div class="anno">
+          <span class="tag c-red">camelCase / snake_case</span>
+          <span class="desc"><code>/api/ticketTypes</code> &nbsp;<code>/api/ticket_types</code></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- HTTP METHOD + STATUS -->
+    <div class="card accent-green">
+      <div class="card-header bg-green">
+        <span class="icon">📋</span>
+        <h2 style="color:var(--green)">HTTP Method + Status Code</h2>
+      </div>
+      <div class="card-body">
+        <div class="anno">
+          <span class="tag c-blue" style="min-width:60px;text-align:center;">GET</span>
+          <span class="desc"><code>/tickets</code> → <code>200 OK</code> + danh sách<br/><code>/tickets/1</code> → <code>200 OK</code> hoặc <code>404 Not Found</code></span>
+        </div>
+        <div class="anno">
+          <span class="tag c-green" style="min-width:60px;text-align:center;">POST</span>
+          <span class="desc"><code>/tickets</code> → <code>201 Created</code> + object vừa tạo</span>
+        </div>
+        <div class="anno">
+          <span class="tag c-yellow" style="min-width:60px;text-align:center;">PUT</span>
+          <span class="desc"><code>/tickets/1</code> → <code>200 OK</code> + object đã cập nhật (toàn bộ)</span>
+        </div>
+        <div class="anno">
+          <span class="tag c-orange" style="min-width:60px;text-align:center;">PATCH</span>
+          <span class="desc"><code>/tickets/1</code> → <code>200 OK</code> + object đã cập nhật (một phần)</span>
+        </div>
+        <div class="anno">
+          <span class="tag c-red" style="min-width:60px;text-align:center;">DELETE</span>
+          <span class="desc"><code>/tickets/1</code> → <code>204 No Content</code> (không trả body)</span>
+        </div>
+        <div class="divider"></div>
+        <div class="anno">
+          <span class="tag c-red">400</span>
+          <span class="desc">Bad Request — sai dữ liệu đầu vào, validation lỗi</span>
+        </div>
+        <div class="anno">
+          <span class="tag c-red">401</span>
+          <span class="desc">Unauthorized — chưa đăng nhập / token hết hạn</span>
+        </div>
+        <div class="anno">
+          <span class="tag c-red">403</span>
+          <span class="desc">Forbidden — đã login nhưng không có quyền</span>
+        </div>
+        <div class="anno">
+          <span class="tag c-red">404</span>
+          <span class="desc">Not Found — không tìm thấy resource</span>
+        </div>
+        <div class="anno">
+          <span class="tag c-red">409</span>
+          <span class="desc">Conflict — trùng dữ liệu (email đã tồn tại...)</span>
+        </div>
+        <div class="anno">
+          <span class="tag c-red">500</span>
+          <span class="desc">Internal Server Error — lỗi server không xử lý được</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESPONSE FORMAT -->
+    <div class="card accent-purple">
+      <div class="card-header bg-purple">
+        <span class="icon">📦</span>
+        <h2 style="color:var(--purple)">Response Format chuẩn</h2>
+      </div>
+      <div class="card-body">
+        <div class="section-label">✅ Success</div>
+        <pre style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:#e6edf3;background:var(--surface2);padding:0.8rem;border-radius:6px;line-height:1.7;overflow-x:auto;">{
+  <span style="color:var(--blue)">"success"</span>: <span style="color:var(--orange)">true</span>,
+  <span style="color:var(--blue)">"message"</span>: <span style="color:var(--green)">"Tạo ticket thành công"</span>,
+  <span style="color:var(--blue)">"data"</span>: {
+    <span style="color:var(--blue)">"id"</span>: <span style="color:var(--orange)">1</span>,
+    <span style="color:var(--blue)">"title"</span>: <span style="color:var(--green)">"Lỗi đăng nhập"</span>,
+    <span style="color:var(--blue)">"status"</span>: <span style="color:var(--green)">"OPEN"</span>
+  }
+}</pre>
+        <div class="section-label" style="margin-top:0.6rem;">❌ Error</div>
+        <pre style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:#e6edf3;background:var(--surface2);padding:0.8rem;border-radius:6px;line-height:1.7;overflow-x:auto;">{
+  <span style="color:var(--blue)">"success"</span>: <span style="color:var(--red)">false</span>,
+  <span style="color:var(--blue)">"message"</span>: <span style="color:var(--red)">"Ticket không tồn tại"</span>,
+  <span style="color:var(--blue)">"errors"</span>: [
+    { <span style="color:var(--blue)">"field"</span>: <span style="color:var(--green)">"title"</span>, <span style="color:var(--blue)">"message"</span>: <span style="color:var(--green)">"không được để trống"</span> }
+  ],
+  <span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--green)">"2024-01-01T10:00:00"</span>
+}</pre>
+      </div>
+    </div>
+
+    <!-- QUERY PARAMS / PAGINATION -->
+    <div class="card accent-orange">
+      <div class="card-header bg-orange">
+        <span class="icon">📄</span>
+        <h2 style="color:var(--orange)">Pagination &amp; Filter</h2>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Query Params chuẩn</div>
+        <div class="anno">
+          <span class="tag c-orange">page / size</span>
+          <span class="desc"><code>GET /tickets?page=0&size=10</code> — phân trang</span>
+        </div>
+        <div class="anno">
+          <span class="tag c-orange">sort</span>
+          <span class="desc"><code>GET /tickets?sort=createdAt,desc</code> — sắp xếp</span>
+        </div>
+        <div class="anno">
+          <span class="tag c-orange">filter</span>
+          <span class="desc"><code>GET /tickets?status=OPEN&priority=HIGH</code></span>
+        </div>
+        <div class="anno">
+          <span class="tag c-orange">search</span>
+          <span class="desc"><code>GET /tickets?q=lỗi+đăng+nhập</code></span>
+        </div>
+        <div class="divider"></div>
+        <div class="section-label">Response kèm pagination</div>
+        <pre style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:#e6edf3;background:var(--surface2);padding:0.8rem;border-radius:6px;line-height:1.7;overflow-x:auto;">{
+  <span style="color:var(--blue)">"data"</span>: [ <span style="color:var(--muted)">/* danh sách */</span> ],
+  <span style="color:var(--blue)">"pagination"</span>: {
+    <span style="color:var(--blue)">"page"</span>: <span style="color:var(--orange)">0</span>,
+    <span style="color:var(--blue)">"size"</span>: <span style="color:var(--orange)">10</span>,
+    <span style="color:var(--blue)">"totalElements"</span>: <span style="color:var(--orange)">42</span>,
+    <span style="color:var(--blue)">"totalPages"</span>: <span style="color:var(--orange)">5</span>
+  }
+}</pre>
+      </div>
+    </div>
+
+    <!-- REST CONTROLLER PATTERN -->
+    <div class="card accent-yellow" style="grid-column: span 2;">
+      <div class="card-header bg-yellow">
+        <span class="icon">🧩</span>
+        <h2 style="color:var(--yellow)">Controller Pattern chuẩn — Ticket API</h2>
+      </div>
+      <div class="card-body">
+        <pre style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#e6edf3;background:var(--surface2);padding:1rem;border-radius:8px;line-height:1.8;overflow-x:auto;"><span style="color:var(--pink)">@RestController</span>
+<span style="color:var(--pink)">@RequestMapping</span>(<span style="color:var(--green)">"/api/v1/tickets"</span>)
+<span style="color:var(--pink)">@RequiredArgsConstructor</span>
+<span style="color:var(--blue)">public class</span> <span style="color:var(--yellow)">TicketController</span> {
+
+    <span style="color:var(--blue)">private final</span> TicketService ticketService;
+
+    <span style="color:var(--muted)">// GET /api/v1/tickets?page=0&size=10&status=OPEN</span>
+    <span style="color:var(--pink)">@GetMapping</span>
+    <span style="color:var(--blue)">public</span> ResponseEntity&lt;ApiResponse&lt;Page&lt;TicketResponse&gt;&gt;&gt; getAll(
+            <span style="color:var(--pink)">@RequestParam</span>(defaultValue = <span style="color:var(--green)">"0"</span>) int page,
+            <span style="color:var(--pink)">@RequestParam</span>(defaultValue = <span style="color:var(--green)">"10"</span>) int size,
+            <span style="color:var(--pink)">@RequestParam</span>(required = <span style="color:var(--orange)">false</span>) TicketStatus status) {
+        <span style="color:var(--blue)">return</span> ResponseEntity.ok(ticketService.getAll(page, size, status));
+    }
+
+    <span style="color:var(--muted)">// GET /api/v1/tickets/1</span>
+    <span style="color:var(--pink)">@GetMapping</span>(<span style="color:var(--green)">"/{id}"</span>)
+    <span style="color:var(--blue)">public</span> ResponseEntity&lt;ApiResponse&lt;TicketResponse&gt;&gt; getById(<span style="color:var(--pink)">@PathVariable</span> Long id) {
+        <span style="color:var(--blue)">return</span> ResponseEntity.ok(ticketService.getById(id));
+    }
+
+    <span style="color:var(--muted)">// POST /api/v1/tickets</span>
+    <span style="color:var(--pink)">@PostMapping</span>
+    <span style="color:var(--blue)">public</span> ResponseEntity&lt;ApiResponse&lt;TicketResponse&gt;&gt; create(<span style="color:var(--pink)">@RequestBody @Valid</span> TicketRequest req) {
+        <span style="color:var(--blue)">return</span> ResponseEntity.status(<span style="color:var(--orange)">201</span>).body(ticketService.create(req));
+    }
+
+    <span style="color:var(--muted)">// PATCH /api/v1/tickets/1</span>
+    <span style="color:var(--pink)">@PatchMapping</span>(<span style="color:var(--green)">"/{id}"</span>)
+    <span style="color:var(--blue)">public</span> ResponseEntity&lt;ApiResponse&lt;TicketResponse&gt;&gt; update(<span style="color:var(--pink)">@PathVariable</span> Long id,
+            <span style="color:var(--pink)">@RequestBody @Valid</span> TicketRequest req) {
+        <span style="color:var(--blue)">return</span> ResponseEntity.ok(ticketService.update(id, req));
+    }
+
+    <span style="color:var(--muted)">// DELETE /api/v1/tickets/1</span>
+    <span style="color:var(--pink)">@DeleteMapping</span>(<span style="color:var(--green)">"/{id}"</span>)
+    <span style="color:var(--blue)">public</span> ResponseEntity&lt;Void&gt; delete(<span style="color:var(--pink)">@PathVariable</span> Long id) {
+        ticketService.delete(id);
+        <span style="color:var(--blue)">return</span> ResponseEntity.noContent().build(); <span style="color:var(--muted)">// 204</span>
+    }
+
+    <span style="color:var(--muted)">// GET /api/v1/tickets/1/comments</span>
+    <span style="color:var(--pink)">@GetMapping</span>(<span style="color:var(--green)">"/{id}/comments"</span>)
+    <span style="color:var(--blue)">public</span> ResponseEntity&lt;ApiResponse&lt;List&lt;CommentResponse&gt;&gt;&gt; getComments(<span style="color:var(--pink)">@PathVariable</span> Long id) {
+        <span style="color:var(--blue)">return</span> ResponseEntity.ok(ticketService.getComments(id));
+    }
+}</pre>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">
+  <p>Spring Boot Annotations Cheatsheet · Helpdesk System</p>
+</div>
+
+</body>
+</html>

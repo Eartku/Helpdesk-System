@@ -1,0 +1,153 @@
+com.example.helpdesk/
+│
+├── auth/
+│   ├── AuthController
+│   ├── AuthService
+│   ├── JwtService
+│   ├── JwtAuthFilter
+│   ├── dto/
+│   │   ├── LoginRequest
+│   │   ├── RegisterRequest
+│   │   └── AuthResponse         # accessToken + refreshToken
+│
+├── user/
+│   ├── User                     # Entity
+│   ├── UserStatus               # Enum: ACTIVE, INACTIVE, BANNED
+│   ├── UserController
+│   ├── UserService
+│   ├── UserRepository
+│   └── dto/
+│       ├── UserRequest
+│       └── UserResponse
+│
+├── ticket/
+│   ├── Ticket                   # Entity
+│   ├── TicketStatus             # Enum: OPEN, IN_PROGRESS, RESOLVED, CLOSED
+│   ├── TicketPriority           # Enum: LOW, MEDIUM, HIGH, CRITICAL
+│   ├── TicketType               # Enum: BUG, FEATURE, SUPPORT...
+│   ├── TicketController
+│   ├── TicketService
+│   ├── TicketRepository
+│   └── dto/
+│       ├── TicketRequest
+│       └── TicketResponse
+│
+├── comment/
+│   ├── Comment                  # Entity
+│   ├── CommentController
+│   ├── CommentService
+│   ├── CommentRepository
+│   └── dto/
+│       ├── CommentRequest
+│       └── CommentResponse
+│
+├── role/
+│   ├── Role                     # Entity
+│   ├── RoleName                 # Enum: ADMIN, AGENT, USER
+│   └── RoleRepository
+│
+├── config/
+│   ├── SecurityConfig
+│   ├── WebConfig                # CORS
+│   └── SwaggerConfig
+│
+└── exception/
+    ├── GlobalExceptionHandler   # @RestControllerAdvice
+    ├── ResourceNotFoundException
+    ├── UnauthorizedException
+    └── ApiError                 # Response format lỗi chuẩn
+
+Core Concept
+→ REST API x
+→ Database x
+→ Làm project
+→ Deploy
+→ Advanced
+1️⃣ Spring Core Concept
+IoC - Inversion of Control
+DI - Dependency Injection. x
+Bean
+Autowiring
+(Hiểu để biết Spring làm gì phía sau.)
+
+2️⃣ Spring Boot Core Features
+Annotation x
+Application.properties  x
+Logging
+DevTools
+
+3️⃣ REST API
+@RestController
+@RequestMapping
+@GetMapping
+@PostMapping
+@RequestBody
+Exception Handling
+Validation
+
+4️⃣ Database + JPA
+MySQL
+JPA
+JpaRepository
+CRUD
+H2 (để test)
+
+1. SOLID PRINCIPLES
+    Single responsibility principle (SRP)
+    Open/Closed principle (OCP)
+    Liskov substitution principe (LSP)
+    Interface segregation principle (ISP)
+    Dependency inversion principle (DIP)
+
+Nguyên lý này ứng với chữ S trong SOLID,
+có ý nghĩa là một class chỉ nên giữ một trách nhiệm (chức năng) duy nhất.
+Đề xác định một class giữ một hay nhiều trách nhiệm bằng cách xem xét nếu có thể nghĩ ra nhiều hơn
+một động cơ làm thay đổi class, thì class đó có nhiều hơn một trách nhiệm.
+
+2. JPA DATA
+    @Entity : Chú thích này xác định rằng một lớp có thể được ánh xạ vào một bảng
+
+    @Id: Chú thích này chỉ định khóa chính của thực thể.
+
+    @GeneratedValue: Chú thích này được sử dụng để chỉ định chiến lược tạo khóa chính để sử dụng.
+    tức là Hướng dẫn cơ sở dữ liệu để tạo ra một giá trị cho trường này tự động.
+    Nếu chiến lược không được chỉ định theo mặc định AUTO sẽ được sử dụng.
+
+    @Repository: Chú thích @Repository là một điểm đánh dấu cho bất kỳ lớp nào đáp ứng vai trò hoặc khuôn mẫu của một kho lưu trữ
+     (còn được gọi là Đối tượng truy cập dữ liệu hoặc DAO).
+
+    @Service: Chú thích này được sử dụng với các lớp cung cấp một số chức năng kinh doanh.
+    Spring context sẽ tự động phát hiện các lớp này khi cấu hình dựa trên chú thích và quét classpath được sử dụng.
+    Ở đây kho lưu trữ JPA có rất nhiều phương pháp chung được xác định trước để thực hiện hoạt động cơ sở dữ liệu một số được sử dụng trong mã dưới đây.
+
+    # REST CONTROLLER
+    Lớp điều khiển:
+
+        @RestController: Đây là chú thích Spring được sử dụng để xây dựng REST API theo cách khai báo.
+         Chú thích RestController được áp dụng cho một lớp để đánh dấu nó là một trình xử lý yêu cầu và Spring sẽ thực hiện
+         việc xây dựng và cung cấp dịch vụ web RESTful trong thời gian chạy.
+
+        @Autowired: Chú thích này có thể được sử dụng để tự động kết nối đậu trên phương thức setter giống như chú thích
+        @Required, constructor, một thuộc tính hoặc phương thức với tên tùy ý và / hoặc nhiều đối số.
+
+        @PostMapping: Chú thích này lập bản đồ HTTP POST yêu cầu vào các phương pháp xử lý cụ thể.
+        Nó là một chú thích sáng tác hoạt động như một lối tắt cho @RequestMapping(method = RequestMethod. BÀI VIẾT)
+
+        @GetMapping: Chú thích này là một phiên bản chuyên biệt của chú thích @RequestMapping hoạt động như một lối tắt cho
+        @RequestMapping(method = RequestMethod. NHẬN ĐƯỢC).
+        Các phương thức @GetMapping được chú thích trong các lớp @Controller được chú thích xử lý các yêu cầu HTTP GET được khớp với biểu thức URI nhất định.
+
+        @DeleteMapping: Chú thích này lập map HTTP DELETE yêu cầu vào các phương pháp xử lý cụ thể.
+         Nó là một chú thích sáng tác hoạt động như một lối tắt cho @RequestMapping(method = RequestMethod. XÓA)
+
+    # Anottation Quan hệ thực thể:
+    @ManytoMany: quan  hệ N - N
+
+    @ManytoOne: quan hệ N - 1
+
+    @OneToOne: Quan hệ 1 - 1
+
+    @OneToMany: quan hệ 1 - N
+
+** Lưu ý: Dùng set cho @ManytoMany vì tránh lặp các dòng dữ liệu giôngs hệt nhau
+

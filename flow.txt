@@ -1,0 +1,105 @@
+┌─────────────────────────────────────────────────────┐
+│                     REGISTER                         │
+└─────────────────────────────────────────────────────┘
+
+Client gửi JSON
+{ fullname, dob, email, password }
+        ↓
+RegisterRequest        ← chứa data nhận vào
+        ↓
+AuthController         ← nhận request, gọi AuthService
+        ↓
+AuthService
+  ├── existsByEmail?   ← UserRepository kiểm tra DB
+  │     └── Rồi → throw Exception "Email đã tồn tại"
+  ├── hash password    ← BCryptPasswordEncoder
+  ├── tạo User mới
+  ├── findByName(USER) ← RoleRepository lấy role mặc định
+  ├── gán role cho user
+  ├── lưu vào DB       ← UserRepository.save()
+  └── generateToken()  ← JwtService tạo token
+        ↓
+AuthResponse           ← chứa data trả về
+{ token, email, fullname }
+
+
+┌─────────────────────────────────────────────────────┐
+│                      LOGIN                           │
+└─────────────────────────────────────────────────────┘
+
+Client gửi JSON
+{ email, password }
+        ↓
+AuthRequest            ← chứa data nhận vào
+        ↓
+AuthController         ← nhận request, gọi AuthService
+        ↓
+AuthService
+  ├── authenticate()   ← AuthenticationManager kiểm tra
+  │     ├── loadUserByUsername()  ← UserDetailsServiceImpl
+  │     │     └── findByEmail()   ← UserRepository tìm DB
+  │     ├── so sánh password
+  │     ├── kiểm tra isEnabled()  ← status == ACTIVE?
+  │     └── kiểm tra isAccountNonLocked() ← không BANNED?
+  │           └── Sai → throw BadCredentialsException
+  └── generateToken()  ← JwtService tạo token
+        ↓
+AuthResponse           ← chứa data trả về
+{ token, email, fullname }
+
+┌─────────────────────────────────────────────────────┐
+│              GỌI API SAU KHI LOGIN                   │
+└─────────────────────────────────────────────────────┘
+
+Client gửi request + token
+GET /api/v1/something
+Authorization: Bearer eyJhb...
+        ↓
+JwtAuthFilter          ← chặn MỌI request
+  ├── đọc header Authorization
+  ├── cắt lấy token (bỏ "Bearer ")
+  ├── extractEmail()   ← JwtService giải mã token
+  ├── loadUserByUsername() ← UserDetailsServiceImpl
+  └── isTokenValid()   ← email khớp + chưa hết hạn?
+        ├── Không hợp lệ → 401
+        └── Hợp lệ → set vào SecurityContext
+        ↓
+SecurityConfig         ← kiểm tra quyền
+  ├── /api/v1/auth/**  → permitAll (không cần token)
+  ├── /api/v1/admin/** → hasRole("ADMIN")
+  └── anyRequest()     → authenticated()
+        ├── Không đủ quyền → 403
+        └── Đủ quyền → vào Controller
+        ↓
+Controller xử lý → trả response
+
+┌─────────────────────────────────────────────────────┐
+│  TẦNG CONTROLLER — Nhận & trả HTTP request          │
+│  AuthController.java                                 │
+│  → Nhận JSON từ client                              │
+│  → Gọi AuthService                                  │
+│  → Trả response về                                  │
+└─────────────────────────────────────────────────────┘
+        ↓
+┌─────────────────────────────────────────────────────┐
+│  TẦNG SERVICE — Xử lý logic nghiệp vụ              │
+│  AuthService.java                                    │
+│  → Kiểm tra email tồn tại chưa                     │
+│  → Hash password                                    │
+│  → Tạo user, gán role                              │
+│  → Gọi JwtService tạo token                        │
+└─────────────────────────────────────────────────────┘
+        ↓
+┌─────────────────────────────────────────────────────┐
+│  TẦNG REPOSITORY — Truy cập DB                      │
+│  UserRepository.java   → bảng users                │
+│  RoleRepository.java   → bảng roles                │
+└─────────────────────────────────────────────────────┘
+        ↓
+┌─────────────────────────────────────────────────────┐
+│  TẦNG SECURITY — Bảo vệ API                        │
+│  JwtAuthFilter.java       → chặn, đọc token        │
+│  JwtService.java          → tạo, giải mã token     │
+│  SecurityConfig.java      → rules phân quyền       │
+│  UserDetailsServiceImpl   → load user cho Spring   │
+└─────────────────────────────────────────────────────┘
